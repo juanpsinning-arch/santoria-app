@@ -134,6 +134,12 @@
     font-weight: 600;
   }
   .cta-btn.filled:hover{ filter: brightness(1.08); }
+  .install-note{
+    font-size: 11.5px; line-height:1.6; color: var(--ink-soft);
+    margin-top: 14px; max-width: 440px;
+  }
+  .install-note strong{ color: var(--gold-soft); font-weight:600; }
+  @media (max-width: 860px){ .install-note{ margin-left:auto; margin-right:auto; } }
 
   /* decorative ring */
   .hero-visual{
@@ -381,6 +387,7 @@
       <a href="#catalogo" class="cta-btn">Ver catálogo →</a>
       <a href="santoria.apk" download class="cta-btn filled">Descargar App ⬇</a>
     </div>
+    <p class="install-note">Android puede mostrar un aviso al instalar apps fuera de Play Store — es normal, solo toca <strong>"Instalar de todas formas"</strong> o activa <strong>"Permitir de esta fuente"</strong>.</p>
   </div>
   <div class="hero-visual">
     <div class="glow"></div>
@@ -652,6 +659,8 @@ document.addEventListener('click', (e)=>{
 if (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) {
   const dlBtn = document.querySelector('a[href="santoria.apk"]');
   if (dlBtn) dlBtn.remove();
+  const installNote = document.querySelector('.install-note');
+  if (installNote) installNote.remove();
 }
 
 renderTabs();
