@@ -125,6 +125,15 @@
     transition: all .2s ease;
   }
   .cta-btn:hover{ background: var(--gold); color:#14100D; }
+  .cta-row{ display:flex; gap:14px; flex-wrap:wrap; }
+  @media (max-width: 860px){ .cta-row{ justify-content:center; } }
+  .cta-btn.filled{
+    background: var(--logo-grad);
+    border-color: transparent;
+    color: #2A1418;
+    font-weight: 600;
+  }
+  .cta-btn.filled:hover{ filter: brightness(1.08); }
 
   /* decorative ring */
   .hero-visual{
@@ -368,7 +377,10 @@
     <h1 class="serif">Cuídate con <span class="accent">intención.</span><br>Elige lo que <span class="accent">te transforma.</span></h1>
     <div class="script-line script">Jamás te detengas ♡</div>
     <p class="desc">Quemadores, fajas y fibras pensados para acompañar tu proceso, con seguimiento cercano por WhatsApp en cada pedido.</p>
-    <a href="#catalogo" class="cta-btn">Ver catálogo →</a>
+    <div class="cta-row">
+      <a href="#catalogo" class="cta-btn">Ver catálogo →</a>
+      <a href="santoria.apk" download class="cta-btn filled">Descargar App ⬇</a>
+    </div>
   </div>
   <div class="hero-visual">
     <div class="glow"></div>
@@ -636,6 +648,11 @@ document.addEventListener('click', (e)=>{
     tabContactMenu.classList.remove('open');
   }
 });
+
+if (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) {
+  const dlBtn = document.querySelector('a[href="santoria.apk"]');
+  if (dlBtn) dlBtn.remove();
+}
 
 renderTabs();
 renderGrid();
