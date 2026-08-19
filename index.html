@@ -70,6 +70,25 @@
   .nav-wa:hover{ background: var(--gold); color: #14100D; }
   .nav-wa svg{ width:14px; height:14px; fill: currentColor; }
 
+  .nav-actions{ display:flex; align-items:center; gap:14px; }
+  .nav-cart{
+    position:relative;
+    background:transparent; border:1px solid var(--line);
+    border-radius:50%; width:38px; height:38px;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; color: var(--gold-soft);
+    flex-shrink:0;
+  }
+  .nav-cart svg{ width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+  .cart-badge{
+    position:absolute; top:-6px; right:-6px;
+    background: var(--logo-grad); color:#2A1418;
+    font-size:10px; font-weight:700;
+    min-width:18px; height:18px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    padding:0 3px;
+  }
+
   /* ===== Hero ===== */
   .hero{
     position:relative;
@@ -269,6 +288,15 @@
     font-size: 13px; letter-spacing:0.03em;
     padding: 5px 12px; border-radius: 30px;
   }
+  .add-tag{
+    position:absolute; bottom:12px; right:12px;
+    background: var(--logo-grad);
+    border:none; color:#2A1418;
+    width:30px; height:30px; border-radius:50%;
+    font-size:18px; font-weight:600; line-height:1;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.35);
+  }
   .card-body{ padding: 18px 18px 20px; }
   .card-body .cat{ font-size: 10px; letter-spacing:0.14em; text-transform:uppercase; color: var(--gold); margin-bottom:8px; }
   .card-body h3{ font-family:'Cormorant Garamond', serif; font-weight:600; font-size:21px; color:var(--ink); margin-bottom:6px; }
@@ -298,6 +326,30 @@
     background: rgba(244,236,230,0.08); border:1px solid var(--line);
     display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink); z-index:5;
   }
+
+  .cart-panel{
+    background: var(--card); max-width: 480px; width:100%; max-height:85vh; overflow-y:auto;
+    border: 1px solid var(--line); border-radius: 6px;
+    padding: 28px 24px 24px; position:relative;
+  }
+  .cart-items{ display:flex; flex-direction:column; gap:16px; margin-bottom:20px; }
+  .cart-item{ display:flex; gap:12px; align-items:center; }
+  .cart-item img{ width:56px; height:56px; object-fit:cover; border-radius:4px; flex-shrink:0; }
+  .cart-item-info{ flex:1; min-width:0; }
+  .cart-item-info h4{ font-size:14px; font-weight:500; color:var(--ink); margin-bottom:4px; }
+  .cart-item-info .unit-price{ font-size:12px; color:var(--ink-soft); }
+  .qty-stepper{ display:flex; align-items:center; gap:8px; }
+  .qty-stepper button{
+    width:24px; height:24px; border-radius:50%; border:1px solid var(--line);
+    background:transparent; color:var(--ink); cursor:pointer; font-size:14px; line-height:1;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .qty-stepper span{ font-size:13px; min-width:16px; text-align:center; }
+  .cart-item-remove{ background:none; border:none; color:var(--ink-soft); cursor:pointer; font-size:16px; padding:4px; }
+  .cart-footer{ border-top:1px solid var(--line); padding-top:18px; }
+  .cart-total{ display:flex; justify-content:space-between; font-size:16px; color:var(--ink); margin-bottom:16px; }
+  .cart-total span{ font-family:'Cormorant Garamond', serif; font-size:22px; color: var(--gold-soft); }
+  .cart-empty{ text-align:center; color:var(--ink-soft); padding:30px 0; font-size:14px; }
 
   .wa-btn{
     display:flex; align-items:center; justify-content:center; gap:10px;
@@ -370,11 +422,29 @@
 
 <nav>
   <div class="logo"><img src="img/logo-mark.png" alt="Santoria"> SANTORIA</div>
-  <a class="nav-wa" id="navWa" href="#" target="_blank" rel="noopener">
-    <svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2.05 22l5.25-1.38c1.44.79 3.06 1.2 4.7 1.2h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2z"/></svg>
-    Escríbeme
-  </a>
+  <div class="nav-actions">
+    <button class="nav-cart" id="navCartBtn" aria-label="Ver carrito">
+      <svg viewBox="0 0 24 24"><path d="M3 4h2l2.4 12.4a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.6L21 8H6"/><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/></svg>
+      <span class="cart-badge" id="cartBadge" hidden>0</span>
+    </button>
+    <a class="nav-wa" id="navWa" href="#" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2.05 22l5.25-1.38c1.44.79 3.06 1.2 4.7 1.2h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2z"/></svg>
+      Escríbeme
+    </a>
+  </div>
 </nav>
+
+<div class="overlay" id="cartOverlay">
+  <div class="cart-panel">
+    <div class="close-btn" id="cartCloseBtn">✕</div>
+    <h2 class="serif" style="margin-bottom:18px;">Tu carrito</h2>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-footer">
+      <div class="cart-total">Total <span id="cartTotalAmount">$0</span></div>
+      <button class="wa-btn" id="cartCheckoutBtn">Confirmar pedido por WhatsApp</button>
+    </div>
+  </div>
+</div>
 
 <div class="page active" id="page-inicio">
 <section class="hero" id="inicio">
@@ -450,6 +520,7 @@
       <h2 class="serif" id="modalName"></h2>
       <div class="price" id="modalPrice"></div>
       <p class="desc" id="modalDesc"></p>
+      <button class="cta-btn filled" id="modalAddCart" style="justify-content:center; margin-bottom:10px;">Agregar al carrito</button>
       <a class="wa-btn" id="modalWa" href="#" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2.05 22l5.25-1.38c1.44.79 3.06 1.2 4.7 1.2h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2z"/></svg>
         Preguntar por WhatsApp
@@ -508,33 +579,39 @@
    ====================================================================== */
 
 const WHATSAPP_NUMBER = "573125624111";
+const SUPABASE_URL = "https://jjnqrjjjufucvmelxzfl.supabase.co";
+const SUPABASE_KEY = "sb_publishable_Rijl7pf0s_BP3mzqRNDaOg_7chhcrhR";
 
-const PRODUCTS = [
-  { name:"MW Gold", cat:"Nutrition", price:"$135.000", img:"img/gold.jpg",
-    desc:"Quemador de grasa termogénico. Contiene CLA, extracto de té verde y otros estimulantes que aceleran el metabolismo y promueven la quema de calorías. Frasco x30 cápsulas." },
-  { name:"MW Clásico", cat:"Nutrition", price:"$115.000", img:"img/clasica.jpg",
-    desc:"¿Eres sedentaria? MW Clásico es para ti. Si estás empezando tu proceso y no haces mucha actividad física, MW Clásico puede ser tu aliado. Frasco x30 cápsulas." },
-  { name:"MW Silver", cat:"Nutrition", price:"$105.000", img:"img/silver.jpg",
-    desc:"Fórmula mejorada, ideal para principiantes en este producto o para quienes tienen restricciones de salud. Quemador de grasa termogénico con CLA y extracto de té verde. Recomendado usar con acompañamiento médico si tienes alguna patología o estás en tratamiento." },
-  { name:"Dúo KE-MA", cat:"Nutrition", price:"$165.000", img:"img/kemaduo.jpg",
-    desc:"Dúo ideal para apoyar tu proceso de pérdida de peso: quemador KE-MA Burner que acelera el metabolismo, y drenador KE-MA Drainer que ayuda a reducir la inflamación y redefinir la celulitis." },
-  { name:"Fibra MW", cat:"Nutrition", price:"$50.000", img:"img/fibra.jpg",
-    desc:"Si te sientes pesada, inflamada o con digestión lenta, tu cuerpo está pidiendo fibra. Fórmula natural, sabor 100% natural." },
-  { name:"Drenador MW", cat:"Nutrition", price:"$50.000", img:"img/drenador.jpg",
-    desc:"Ideal para personas con retención de líquidos e inflamación. Drenador homeopático en gotas que utiliza sustancias naturales altamente diluidas para estimular la eliminación de desechos y mejorar la función del hígado y los riñones. Frasco x30ml." },
-  { name:"Tekoi", cat:"Nutrition", price:"$67.000", img:"img/tekoi.jpg",
-    desc:"Bienestar que empieza por dentro. Con naranja, jengibre, té verde, té matcha y probióticos, sabor limonada de coco. Ideal para iniciar tu mañana o acompañar tu día con algo saludable. Presentación x150g." },
-  { name:"Gel Frío y Caliente", cat:"Woman", price:"$59.000", img:"img/gel.jpg",
-    desc:"Complemento ideal para potenciar los resultados del ejercicio. Ayuda a reducir medidas en la zona abdominal y a resaltar la definición muscular cuando se acompaña de actividad física y buena alimentación. Presentación fría y caliente." },
-  { name:"Biotina y Colágeno", cat:"Hair", price:"$85.000", img:"img/biotinaycolageno.jpg",
-    desc:"Fortalece tu cabello desde la raíz, mejora la resistencia de tus uñas, aporta elasticidad y firmeza a tu piel y apoya la salud de tus articulaciones. Biotina 10.000mcg + Colágeno, frasco x60 cápsulas." },
-  { name:"X10 Potencializador Sexual", cat:"Nutrition", price:"$50.000", img:"img/x10.jpg",
-    desc:"Potencializador sexual para hombres y mujeres. Producto natural pensado en el rendimiento sexual cuya función es vasodilatar, aumentando el flujo sanguíneo para lograr una erección más rápida y duradera. Bebida a base de borojó, guaraná y chontaduro. Sobre x15ml." },
-  { name:"GuayabOFF", cat:"Nutrition", price:"$65.000", img:"img/guayaboff.jpg",
-    desc:"Rumba sin guayabo sí existe. Tu mejor aliado antes de la fiesta: tómalo 30 minutos antes de consumir licor y disfruta sin remordimiento. Sabor maracuyá. Caja x8 sachets." },
-  { name:"ReduPack Divina Pues", cat:"Woman", price:"$150.000", img:"img/redupack.jpg",
-    desc:"Faja para marcación abdominal que incluye un pad fabricado en látex tipo quirúrgico con diseño ergonómico. Ayuda a delinear la estructura muscular abdominal y estimula el drenaje linfático eliminando grasa localizada, logrando una marcación abdominal natural y fortaleciendo el recto abdominal." },
-];
+let PRODUCTS = [];
+
+function fmtCOP(n){
+  return '$' + Number(n).toLocaleString('es-CO');
+}
+
+async function loadProducts(){
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/products?select=*&active=eq.true&order=sort_order`, {
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
+    });
+    const data = await res.json();
+    PRODUCTS = data.map(d => ({
+      id: d.id,
+      name: d.name,
+      cat: d.category,
+      priceNum: Number(d.price),
+      price: fmtCOP(d.price),
+      img: d.image_url,
+      desc: d.description || ''
+    }));
+  } catch (e) {
+    console.error('No se pudieron cargar los productos', e);
+    grid.innerHTML = '<div class="empty">No se pudo cargar el catálogo. Revisa tu conexión e intenta de nuevo.</div>';
+    return;
+  }
+  categories = ["Todos", ...new Set(PRODUCTS.map(p => p.cat))];
+  renderTabs();
+  renderGrid();
+}
 
 const TESTIMONIALS = [
   { img:"img/testimonios/1.jpg", alt:"Resultado MW Clásico" },
@@ -555,7 +632,7 @@ const grid = document.getElementById('grid');
 const tabsEl = document.getElementById('tabs');
 const overlay = document.getElementById('overlay');
 
-const categories = ["Todos", ...new Set(PRODUCTS.map(p => p.cat))];
+let categories = ["Todos"];
 let activeCat = "Todos";
 
 function waLink(productName){
@@ -583,10 +660,11 @@ function renderGrid(){
     return;
   }
   grid.innerHTML = items.map((p) => `
-    <div class="card" data-idx="${PRODUCTS.indexOf(p)}">
+    <div class="card" data-id="${p.id}">
       <div class="card-img-wrap">
         <img src="${p.img}" alt="${p.name}">
         <div class="price-tag">${p.price}</div>
+        <button class="add-tag" data-id="${p.id}" aria-label="Agregar al carrito">+</button>
       </div>
       <div class="card-body">
         <div class="cat">${p.cat}</div>
@@ -596,11 +674,21 @@ function renderGrid(){
     </div>
   `).join('');
   grid.querySelectorAll('.card').forEach(card=>{
-    card.addEventListener('click', ()=> openModal(PRODUCTS[card.dataset.idx]));
+    card.addEventListener('click', ()=> openModal(PRODUCTS.find(p=>p.id===card.dataset.id)));
+  });
+  grid.querySelectorAll('.add-tag').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      addToCart(PRODUCTS.find(p=>p.id===btn.dataset.id), 1);
+      bumpCartBadge();
+    });
   });
 }
 
+let modalProduct = null;
+
 function openModal(p){
+  modalProduct = p;
   document.getElementById('modalImg').src = p.img;
   document.getElementById('modalImg').alt = p.name;
   document.getElementById('modalCat').textContent = p.cat;
@@ -612,6 +700,12 @@ function openModal(p){
 }
 document.getElementById('closeBtn').addEventListener('click', ()=> overlay.classList.remove('open'));
 overlay.addEventListener('click', (e)=>{ if(e.target===overlay) overlay.classList.remove('open'); });
+document.getElementById('modalAddCart').addEventListener('click', ()=>{
+  if(!modalProduct) return;
+  addToCart(modalProduct, 1);
+  bumpCartBadge();
+  overlay.classList.remove('open');
+});
 
 function renderTestimonials(){
   const testiScroll = document.getElementById('testiScroll');
@@ -663,8 +757,124 @@ if (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.is
   if (installNote) installNote.remove();
 }
 
-renderTabs();
-renderGrid();
+/* ===== Carrito ===== */
+let CART = JSON.parse(localStorage.getItem('santoria_cart') || '[]');
+
+function saveCart(){
+  localStorage.setItem('santoria_cart', JSON.stringify(CART));
+  renderCartBadge();
+}
+
+function addToCart(product, qty){
+  if(!product) return;
+  const existing = CART.find(i => i.id === product.id);
+  if(existing){
+    existing.qty += qty;
+  } else {
+    CART.push({ id: product.id, name: product.name, price: product.priceNum, img: product.img, qty });
+  }
+  saveCart();
+}
+
+function setQty(id, qty){
+  const item = CART.find(i => i.id === id);
+  if(!item) return;
+  if(qty <= 0){
+    CART = CART.filter(i => i.id !== id);
+  } else {
+    item.qty = qty;
+  }
+  saveCart();
+  renderCart();
+}
+
+function cartCount(){ return CART.reduce((s,i)=>s+i.qty, 0); }
+function cartTotal(){ return CART.reduce((s,i)=>s+i.qty*i.price, 0); }
+
+function renderCartBadge(){
+  const badge = document.getElementById('cartBadge');
+  const count = cartCount();
+  badge.textContent = count;
+  badge.hidden = count === 0;
+}
+
+function bumpCartBadge(){
+  const badge = document.getElementById('cartBadge');
+  badge.animate([{ transform:'scale(1.4)' }, { transform:'scale(1)' }], { duration:220, easing:'ease-out' });
+}
+
+function renderCart(){
+  const cartItemsEl = document.getElementById('cartItems');
+  if(CART.length === 0){
+    cartItemsEl.innerHTML = '<div class="cart-empty">Tu carrito está vacío.</div>';
+  } else {
+    cartItemsEl.innerHTML = CART.map(i => `
+      <div class="cart-item" data-id="${i.id}">
+        <img src="${i.img}" alt="${i.name}">
+        <div class="cart-item-info">
+          <h4>${i.name}</h4>
+          <div class="unit-price">${fmtCOP(i.price)} c/u</div>
+        </div>
+        <div class="qty-stepper">
+          <button class="qty-minus" data-id="${i.id}">−</button>
+          <span>${i.qty}</span>
+          <button class="qty-plus" data-id="${i.id}">+</button>
+        </div>
+        <button class="cart-item-remove" data-id="${i.id}" aria-label="Quitar">✕</button>
+      </div>
+    `).join('');
+    cartItemsEl.querySelectorAll('.qty-minus').forEach(b => b.addEventListener('click', ()=>{
+      const item = CART.find(i=>i.id===b.dataset.id); setQty(b.dataset.id, item.qty - 1);
+    }));
+    cartItemsEl.querySelectorAll('.qty-plus').forEach(b => b.addEventListener('click', ()=>{
+      const item = CART.find(i=>i.id===b.dataset.id); setQty(b.dataset.id, item.qty + 1);
+    }));
+    cartItemsEl.querySelectorAll('.cart-item-remove').forEach(b => b.addEventListener('click', ()=> setQty(b.dataset.id, 0)));
+  }
+  document.getElementById('cartTotalAmount').textContent = fmtCOP(cartTotal());
+}
+
+const cartOverlay = document.getElementById('cartOverlay');
+document.getElementById('navCartBtn').addEventListener('click', ()=>{
+  renderCart();
+  cartOverlay.classList.add('open');
+});
+document.getElementById('cartCloseBtn').addEventListener('click', ()=> cartOverlay.classList.remove('open'));
+cartOverlay.addEventListener('click', (e)=>{ if(e.target===cartOverlay) cartOverlay.classList.remove('open'); });
+
+async function checkout(){
+  if(CART.length === 0) return;
+  const total = cartTotal();
+  const lines = CART.map(i => `• ${i.name} x${i.qty} — ${fmtCOP(i.price*i.qty)}`).join('\n');
+  const msg = `Hola! Quiero confirmar mi pedido:\n\n${lines}\n\nTotal: ${fmtCOP(total)}`;
+
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/orders`, {
+      method: 'POST',
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        items: CART.map(i => ({ id: i.id, name: i.name, qty: i.qty, price: i.price })),
+        total
+      })
+    });
+  } catch (e) {
+    console.error('No se pudo registrar el pedido', e);
+  }
+
+  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+  CART = [];
+  saveCart();
+  renderCart();
+  cartOverlay.classList.remove('open');
+}
+document.getElementById('cartCheckoutBtn').addEventListener('click', checkout);
+
+renderCartBadge();
+loadProducts();
 renderTestimonials();
 </script>
 </body>
