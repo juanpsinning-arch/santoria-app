@@ -478,8 +478,24 @@
           <input type="text" id="checkoutName" placeholder="Tu nombre">
         </div>
         <div class="field">
+          <label>Cédula</label>
+          <input type="text" id="checkoutCedula" placeholder="Número de cédula" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label>Celular</label>
+          <input type="tel" id="checkoutPhone" placeholder="Número de celular" inputmode="tel">
+        </div>
+        <div class="field">
+          <label>Ciudad</label>
+          <input type="text" id="checkoutCity" placeholder="Tu ciudad">
+        </div>
+        <div class="field">
           <label>Dirección de envío</label>
-          <input type="text" id="checkoutAddress" placeholder="Calle, número, ciudad">
+          <input type="text" id="checkoutAddress" placeholder="Calle, número">
+        </div>
+        <div class="field">
+          <label>Barrio</label>
+          <input type="text" id="checkoutNeighborhood" placeholder="Tu barrio">
         </div>
         <div class="field">
           <label>Fecha de envío</label>
@@ -919,15 +935,23 @@ async function checkout(){
   if(CART.length === 0) return;
 
   const nameEl = document.getElementById('checkoutName');
+  const cedulaEl = document.getElementById('checkoutCedula');
+  const phoneEl = document.getElementById('checkoutPhone');
+  const cityEl = document.getElementById('checkoutCity');
   const addressEl = document.getElementById('checkoutAddress');
+  const neighborhoodEl = document.getElementById('checkoutNeighborhood');
   const dateEl = document.getElementById('checkoutDate');
   const errEl = document.getElementById('checkoutError');
   const name = nameEl.value.trim();
+  const cedula = cedulaEl.value.trim();
+  const phone = phoneEl.value.trim();
+  const city = cityEl.value.trim();
   const address = addressEl.value.trim();
+  const neighborhood = neighborhoodEl.value.trim();
   const deliveryDate = dateEl.value;
 
-  if(!name || !address || !deliveryDate){
-    errEl.textContent = 'Completa nombre, dirección y fecha de envío para continuar.';
+  if(!name || !cedula || !phone || !city || !address || !neighborhood || !deliveryDate){
+    errEl.textContent = 'Completa nombre, cédula, celular, ciudad, dirección, barrio y fecha de envío para continuar.';
     return;
   }
   errEl.textContent = '';
@@ -935,7 +959,7 @@ async function checkout(){
   const total = cartTotal();
   const lines = CART.map(i => `• ${i.name} x${i.qty} — ${fmtCOP(i.price*i.qty)}`).join('\n');
   const dateFmt = new Date(deliveryDate + 'T00:00:00').toLocaleDateString('es-CO', { day:'numeric', month:'long', year:'numeric' });
-  const msg = `Hola! Quiero confirmar mi pedido:\n\n${lines}\n\nTotal: ${fmtCOP(total)}\n\nNombre: ${name}\nDirección: ${address}\nFecha de envío: ${dateFmt}`;
+  const msg = `Hola! Quiero confirmar mi pedido:\n\n${lines}\n\nTotal: ${fmtCOP(total)}\n\nNombre: ${name}\nCédula: ${cedula}\nCelular: ${phone}\nCiudad: ${city}\nBarrio: ${neighborhood}\nDirección: ${address}\nFecha de envío: ${dateFmt}`;
 
   try {
     await fetch(`${SUPABASE_URL}/rest/v1/orders`, {
@@ -949,7 +973,11 @@ async function checkout(){
         items: CART.map(i => ({ id: i.id, name: i.name, qty: i.qty, price: i.price })),
         total,
         customer_name: name,
+        customer_cedula: cedula,
+        customer_phone: phone,
+        customer_city: city,
         customer_address: address,
+        customer_neighborhood: neighborhood,
         delivery_date: deliveryDate
       })
     });
@@ -962,7 +990,11 @@ async function checkout(){
   saveCart();
   renderCart();
   nameEl.value = '';
+  cedulaEl.value = '';
+  phoneEl.value = '';
+  cityEl.value = '';
   addressEl.value = '';
+  neighborhoodEl.value = '';
   dateEl.value = '';
   cartOverlay.classList.remove('open');
 }
