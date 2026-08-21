@@ -347,6 +347,16 @@
   .qty-stepper span{ font-size:13px; min-width:16px; text-align:center; }
   .cart-item-remove{ background:none; border:none; color:var(--ink-soft); cursor:pointer; font-size:16px; padding:4px; }
   .cart-footer{ border-top:1px solid var(--line); padding-top:18px; }
+  .checkout-fields{ margin-bottom:18px; }
+  .checkout-fields .field{ margin-bottom:12px; text-align:left; }
+  .checkout-fields label{ display:block; font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:5px; }
+  .checkout-fields input{
+    width:100%; background: var(--bg-alt); border:1px solid var(--line); border-radius:4px;
+    padding:11px 12px; color:var(--ink); font-size:13.5px;
+  }
+  .checkout-fields input:focus{ outline:none; border-color: var(--gold); }
+  .checkout-fields input::-webkit-calendar-picker-indicator{ filter: invert(0.8); }
+  .checkout-error{ color:#D9736F; font-size:12px; margin-top:4px; min-height:14px; }
   .cart-total{ display:flex; justify-content:space-between; font-size:16px; color:var(--ink); margin-bottom:16px; }
   .cart-total span{ font-family:'Cormorant Garamond', serif; font-size:22px; color: var(--gold-soft); }
   .cart-empty{ text-align:center; color:var(--ink-soft); padding:30px 0; font-size:14px; }
@@ -462,6 +472,21 @@
     <div class="cart-items" id="cartItems"></div>
     <div class="cart-footer">
       <div class="cart-total">Total <span id="cartTotalAmount">$0</span></div>
+      <div class="checkout-fields">
+        <div class="field">
+          <label>Nombre completo</label>
+          <input type="text" id="checkoutName" placeholder="Tu nombre">
+        </div>
+        <div class="field">
+          <label>Dirección de envío</label>
+          <input type="text" id="checkoutAddress" placeholder="Calle, número, ciudad">
+        </div>
+        <div class="field">
+          <label>Fecha de envío</label>
+          <input type="date" id="checkoutDate">
+        </div>
+        <div class="checkout-error" id="checkoutError"></div>
+      </div>
       <button class="wa-btn" id="cartCheckoutBtn">Confirmar pedido por WhatsApp</button>
     </div>
   </div>
@@ -566,7 +591,8 @@
 <footer id="footer">
   <div class="fname serif">SANTORIA</div>
   Pide el tuyo por WhatsApp<br>
-  Los quemadores y fibras son complementos alimenticios. Recomendamos consultar con un profesional de salud antes de consumirlos, especialmente si tienes alguna condición médica o estás embarazada.
+  Los quemadores y fibras son complementos alimenticios. Recomendamos consultar con un profesional de salud antes de consumirlos, especialmente si tienes alguna condición médica o estás embarazada.<br><br>
+  Las cinturillas son un complemento estético y postural, no un método de pérdida de peso. Úsalas de forma progresiva, sin ajustar en exceso, evita dormir con ellas puestas y consulta a tu médico si estás embarazada, tienes problemas respiratorios, circulatorios o cicatrices/cirugías recientes.
 </footer>
 
 <nav class="tabbar" id="tabbar">
@@ -891,9 +917,25 @@ cartOverlay.addEventListener('click', (e)=>{ if(e.target===cartOverlay) cartOver
 
 async function checkout(){
   if(CART.length === 0) return;
+
+  const nameEl = document.getElementById('checkoutName');
+  const addressEl = document.getElementById('checkoutAddress');
+  const dateEl = document.getElementById('checkoutDate');
+  const errEl = document.getElementById('checkoutError');
+  const name = nameEl.value.trim();
+  const address = addressEl.value.trim();
+  const deliveryDate = dateEl.value;
+
+  if(!name || !address || !deliveryDate){
+    errEl.textContent = 'Completa nombre, dirección y fecha de envío para continuar.';
+    return;
+  }
+  errEl.textContent = '';
+
   const total = cartTotal();
   const lines = CART.map(i => `• ${i.name} x${i.qty} — ${fmtCOP(i.price*i.qty)}`).join('\n');
-  const msg = `Hola! Quiero confirmar mi pedido:\n\n${lines}\n\nTotal: ${fmtCOP(total)}`;
+  const dateFmt = new Date(deliveryDate + 'T00:00:00').toLocaleDateString('es-CO', { day:'numeric', month:'long', year:'numeric' });
+  const msg = `Hola! Quiero confirmar mi pedido:\n\n${lines}\n\nTotal: ${fmtCOP(total)}\n\nNombre: ${name}\nDirección: ${address}\nFecha de envío: ${dateFmt}`;
 
   try {
     await fetch(`${SUPABASE_URL}/rest/v1/orders`, {
@@ -905,7 +947,10 @@ async function checkout(){
       },
       body: JSON.stringify({
         items: CART.map(i => ({ id: i.id, name: i.name, qty: i.qty, price: i.price })),
-        total
+        total,
+        customer_name: name,
+        customer_address: address,
+        delivery_date: deliveryDate
       })
     });
   } catch (e) {
@@ -916,6 +961,9 @@ async function checkout(){
   CART = [];
   saveCart();
   renderCart();
+  nameEl.value = '';
+  addressEl.value = '';
+  dateEl.value = '';
   cartOverlay.classList.remove('open');
 }
 document.getElementById('cartCheckoutBtn').addEventListener('click', checkout);
