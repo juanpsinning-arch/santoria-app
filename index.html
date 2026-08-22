@@ -332,6 +332,26 @@
     border: 1px solid var(--line); border-radius: 6px;
     padding: 28px 24px 24px; position:relative;
   }
+
+  .welcome-panel{
+    background: var(--card); max-width: 400px; width:100%;
+    border: 1px solid var(--gold); border-radius: 8px;
+    padding: 32px 26px 26px; position:relative; text-align:center;
+  }
+  .welcome-logo{ width:56px; height:auto; margin: 0 auto 16px; display:block; }
+  .welcome-panel h2{ font-size:22px; font-weight:500; color:var(--ink); margin-bottom:10px; }
+  .welcome-text{ font-size:13.5px; color:var(--ink-soft); line-height:1.6; margin-bottom:18px; }
+  .welcome-panel textarea{
+    width:100%; min-height:80px; background: var(--bg-alt); border:1px solid var(--line); border-radius:4px;
+    padding:12px 14px; color:var(--ink); font-size:13.5px; font-family:inherit; resize:vertical;
+    margin-bottom:16px;
+  }
+  .welcome-panel textarea:focus{ outline:none; border-color: var(--gold); }
+  .welcome-panel .wa-btn{ width:100%; margin-bottom:10px; }
+  .welcome-skip{
+    background:none; border:none; color:var(--ink-soft); font-size:12.5px;
+    text-decoration:underline; cursor:pointer; padding:6px;
+  }
   .cart-items{ display:flex; flex-direction:column; gap:16px; margin-bottom:20px; }
   .cart-item{ display:flex; gap:12px; align-items:center; }
   .cart-item img{ width:56px; height:56px; object-fit:cover; border-radius:4px; flex-shrink:0; }
@@ -464,6 +484,18 @@
     </a>
   </div>
 </nav>
+
+<div class="overlay" id="welcomeOverlay">
+  <div class="welcome-panel">
+    <div class="close-btn" id="welcomeCloseBtn">✕</div>
+    <img class="welcome-logo" src="img/logo-mark.png" alt="Santoria">
+    <h2 class="serif">¿Es tu primera vez con nosotros?</h2>
+    <p class="welcome-text">Cuéntanos qué necesitas y te damos asesoría personalizada antes de tu compra.</p>
+    <textarea id="welcomeMessage" placeholder="Escribe aquí tu pregunta o lo que buscas..."></textarea>
+    <button class="wa-btn" id="welcomeSendBtn">Enviar por WhatsApp</button>
+    <button class="welcome-skip" id="welcomeSkipBtn">Ahora no</button>
+  </div>
+</div>
 
 <div class="overlay" id="cartOverlay">
   <div class="cart-panel">
@@ -999,6 +1031,30 @@ async function checkout(){
   cartOverlay.classList.remove('open');
 }
 document.getElementById('cartCheckoutBtn').addEventListener('click', checkout);
+
+/* ===== Popup de bienvenida ===== */
+const welcomeOverlay = document.getElementById('welcomeOverlay');
+
+function closeWelcome(){
+  welcomeOverlay.classList.remove('open');
+  localStorage.setItem('santoria_welcome_seen', '1');
+}
+
+document.getElementById('welcomeCloseBtn').addEventListener('click', closeWelcome);
+document.getElementById('welcomeSkipBtn').addEventListener('click', closeWelcome);
+welcomeOverlay.addEventListener('click', (e)=>{ if(e.target===welcomeOverlay) closeWelcome(); });
+
+document.getElementById('welcomeSendBtn').addEventListener('click', ()=>{
+  const note = document.getElementById('welcomeMessage').value.trim();
+  const base = 'Hola! Es mi primera vez probando los productos de Santoria y quisiera asesoría.';
+  const msg = note ? `${base}\n\n${note}` : base;
+  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+  closeWelcome();
+});
+
+if(!localStorage.getItem('santoria_welcome_seen')){
+  setTimeout(()=> welcomeOverlay.classList.add('open'), 900);
+}
 
 renderCartBadge();
 loadProducts();
